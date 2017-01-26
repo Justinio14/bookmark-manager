@@ -49,7 +49,8 @@ set :views, Proc.new { File.join(root, "views") }
 
   post '/users' do
     user = User.create(email: params[:email],
-                password: params[:password])
+                password: params[:password],
+                password_confirmation: params[:password_confirmation])
     session[:user_id] = user.id
     redirect to('/links')
   end
@@ -59,6 +60,7 @@ set :views, Proc.new { File.join(root, "views") }
       @current_user ||= User.get(session[:user_id])
     end
   end
+
   # start the server if ruby file executed directly
   run! if app_file == $0
 end
