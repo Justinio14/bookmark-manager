@@ -1,7 +1,7 @@
 
 
 
-ENV['RACK_ENV'] = 'test' # ensure app runs tests run in test mode 
+ENV['RACK_ENV'] = 'test' # ensure app runs tests run in test mode
 
 require File.join(File.dirname(__FILE__), '..', './app.rb')
 
@@ -17,6 +17,7 @@ Capybara.app = BookmarkManager
 
 
 require 'sinatra'
+require 'web_helper'
 
 
 
