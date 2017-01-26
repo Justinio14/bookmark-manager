@@ -1,7 +1,7 @@
 
 
 
-ENV['RACK_ENV'] = 'test'
+ENV['RACK_ENV'] = 'test' # ensure app runs tests run in test mode 
 
 require File.join(File.dirname(__FILE__), '..', './app.rb')
 

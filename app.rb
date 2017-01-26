@@ -1,5 +1,5 @@
 
-ENV["RACK_ENV"] ||= "development"
+ENV["RACK_ENV"] ||= "development" # ensures app runs in development mode by default
 
 require 'sinatra/base'
 require './models/data_mapper_setup'
@@ -8,6 +8,7 @@ class BookmarkManager < Sinatra::Base
 
 # sets the view directory correctly
 set :views, Proc.new { File.join(root, "views") }
+# helper method
 
   get '/' do
     redirect '/links'
@@ -20,13 +21,14 @@ set :views, Proc.new { File.join(root, "views") }
   end
 
   post '/links' do
-    link = Link.new(url: params[:url],
-                    title: params[:title])
+    link = Link.create(url: params[:url], title: params[:title])
+    # tag  = Tag.first_or_create(name: params[:tags])
+    # link.tags << tag
     params[:tags].split.each do |tag|
-    link.tags << Tag.create(name: tag)
-   end
+    link.tags << Tag.first_or_create(name: tag)
+    end
     link.save
-    redirect '/links'
+    redirect to('/links')
   end
 
   get '/new' do
@@ -36,7 +38,7 @@ set :views, Proc.new { File.join(root, "views") }
   get '/tags/:name' do
     tag = Tag.first(name: params[:name])
     @links = tag ? tag.links : []
-    erb :'links'
+    erb :links
   end
   # start the server if ruby file executed directly
   run! if app_file == $0
