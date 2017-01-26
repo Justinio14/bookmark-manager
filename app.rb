@@ -3,11 +3,14 @@ ENV["RACK_ENV"] ||= "development" # ensures app runs in development mode by defa
 
 require 'sinatra/base'
 require './models/data_mapper_setup'
+require 'sinatra/flash'
 
 class BookmarkManager < Sinatra::Base
 
 enable :sessions
 set :session_secret, 'super secret'
+
+register Sinatra::Flash
 # sets the view directory correctly
 set :views, Proc.new { File.join(root, "views") }
 # helper method
@@ -44,15 +47,21 @@ set :views, Proc.new { File.join(root, "views") }
   end
 
   get '/users/new' do
+    @user = User.new
     erb :'users/new'
   end
 
   post '/users' do
-    user = User.create(email: params[:email],
+    @user = User.create(email: params[:email],
                 password: params[:password],
                 password_confirmation: params[:password_confirmation])
-    session[:user_id] = user.id
-    redirect to('/links')
+    if @user.save
+    session[:user_id] = @user.id
+    redirect to('/')
+    else
+      flash.now[:notice] = "Password and confirmation password do not match"
+      erb :'users/new'
+    end
   end
 
   helpers do
