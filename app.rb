@@ -25,6 +25,21 @@ set :views, Proc.new { File.join(root, "views") }
     erb :links
   end
 
+  get '/sessions/new' do
+    erb :'sessions/new'
+  end
+
+  post '/sessions' do
+    user = User.authenticate(params[:email], params[:password])
+    if user
+      session[:user_id] = user.id
+      redirect to("/links")
+    else
+      flash.now[:errors] = ['The email or password is incorrect']
+      erb :'sessions/new'
+    end
+  end
+
   post '/links' do
     link = Link.create(url: params[:url], title: params[:title])
     # tag  = Tag.first_or_create(name: params[:tags])
@@ -57,7 +72,7 @@ set :views, Proc.new { File.join(root, "views") }
                 password_confirmation: params[:password_confirmation])
     if @user.save
     session[:user_id] = @user.id
-    redirect to('/')
+    redirect to('/links')
     else
       flash.now[:errors] = @user.errors.full_messages #"Password and confirmation password do not match"
       erb :'users/new'
